@@ -201,6 +201,21 @@
             text-transform: uppercase;
             opacity: 0.5;
         }
+
+        /* Mobile Adjustments */
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 4rem; }
+            .hero p { font-size: 1.2rem; margin: 1rem 0 2.5rem; }
+            .btn-main { padding: 1.2rem 3rem; font-size: 1rem; }
+            .explorer-side { width: 20px; }
+            .explorer-side:hover { width: 300px; }
+            .moon-panel { width: 350px; right: -350px; }
+            .explorer-side:hover .moon-panel { right: -100px; }
+            .dial-container { right: 180px; }
+            .site-card { width: 200px; transform-origin: 800px center; }
+            .lazy-doc { bottom: 1.5rem; left: 1.5rem; }
+            .stats-badge { top: 1.5rem; left: 1.5rem; }
+        }
     </style>
 </head>
 <body>
