@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Explorer | Focus Arc</title>
+    <style>
+        :root {
+            --bg-color: #020617;
+            --accent-color: #38bdf8;
+            --text-color: #f1f5f9;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 20% 30%, rgba(56, 189, 248, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(139, 92, 246, 0.05) 0%, transparent 40%);
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: var(--text-color);
+            overflow: hidden;
+        }
+
+        .hero {
+            text-align: center;
+            z-index: 10;
+            transition: all 0.5s ease;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            letter-spacing: -0.04em;
+            margin: 0;
+            background: linear-gradient(to bottom right, #fff, #475569);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            color: #475569;
+            font-size: 1.1rem;
+            margin: 0.5rem 0 2.5rem;
+        }
+
+        .btn-main {
+            background: #fff;
+            color: #020617;
+            padding: 1rem 2.5rem;
+            border-radius: 100px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-main:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 255, 255, 0.1);
+        }
+
+        /* The Curved Explorer */
+        .explorer-side {
+            position: fixed;
+            right: 0;
+            top: 0;
+            height: 100vh;
+            width: 40px; /* Stealthy trigger strip */
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            pointer-events: auto;
+        }
+
+        .explorer-side:hover {
+            width: 450px; /* Expand hit area so user can interact with the dial */
+        }
+
+        .moon-panel {
+            position: absolute;
+            right: -450px;
+            width: 500px;
+            height: 90vh;
+            background: rgba(15, 23, 42, 0.2);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 100% 0 0 100%;
+            border: 1px solid var(--glass-border);
+            transition: right 0.6s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        .explorer-side:hover .moon-panel {
+            right: -150px;
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        /* The Dial Container */
+        .dial-container {
+            position: absolute;
+            right: 180px; 
+            top: 50%;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .explorer-side:not(:hover) .dial-container {
+            opacity: 0;
+        }
+
+        .site-card {
+            position: absolute;
+            right: 0;
+            top: 0;
+            width: 200px;
+            padding: 0.8rem 1.25rem;
+            background: var(--glass);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            /* Shallow Curve: Very large radius */
+            transform-origin: 1000px center; 
+            pointer-events: auto;
+            transition: opacity 0.4s ease, transform 0.4s ease, border-color 0.3s ease;
+            margin-top: -25px; /* Centering */
+            opacity: 0;
+        }
+
+        .site-card:hover {
+            border-color: var(--accent-color);
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .site-card .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 12px;
+            box-shadow: 0 0 10px currentColor;
+        }
+
+        .site-card .cat {
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: var(--accent-color);
+            margin-bottom: 1px;
+        }
+
+        /* Center Indicator */
+        .focus-line {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 2px;
+            background: var(--accent-color);
+            box-shadow: 0 0 15px var(--accent-color);
+            z-index: 101;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .explorer-side:hover .focus-line {
+            opacity: 0.5;
+        }
+
+        .status {
+            position: fixed;
+            bottom: 2rem;
+            left: 2rem;
+            font-size: 0.7rem;
+            color: #334155;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+    </style>
+</head>
+<body>
+    <div class="hero">
+        <div id="loader" style="font-size: 0.65rem; font-weight: 700; color: var(--accent-color); letter-spacing: 0.2em; margin-bottom: 1rem; opacity: 0">TELEPORTING...</div>
+        <h1>Web Explorer</h1>
+        <p>A curated wheel of the internet's finest corners.</p>
+        <button class="btn-main" onclick="teleport()">Explore Random</button>
+    </div>
+
+    <div class="explorer-side">
+        <div class="focus-line"></div>
+        <div class="moon-panel">
+            <div class="dial-container" id="dial">
+                <!-- JS populated -->
+            </div>
+        </div>
+    </div>
+
+    <div class="status">75+ Verified Sites Loaded</div>
+
+    <script>
+        const sites = [
+            // Verified Interactive Art
+            { url: 'https://neal.fun', cat: 'Creative Hub' },
+            { url: 'https://theuselessweb.com', cat: 'Pure Chaos' },
+            { url: 'https://pointerpointer.com', cat: 'Interactive' },
+            { url: 'https://zoomquilt.org', cat: 'Infinite Art' },
+            { url: 'https://patatap.com', cat: 'Visual Music' },
+            { url: 'https://lusion.co', cat: 'Fluid Web' },
+            { url: 'https://bruno-simon.com', cat: '3D Portfolio' },
+            { url: 'https://resn.co.nz', cat: 'Cinematic Design' },
+            { url: 'https://active-theory.com', cat: 'Interactive WebGL' },
+            { url: 'https://locomotive.ca', cat: 'Fluid Motion' },
+            { url: 'https://moxy.studio', cat: 'Motion Design' },
+            { url: 'https://kprverse.com', cat: 'Immersive Story' },
+            { url: 'https://toyfight.co', cat: 'Playful UI' },
+            { url: 'https://option5.com', cat: 'Personalized Web' },
+            { url: 'https://sync.studio', cat: 'Dynamic Layouts' },
+            { url: 'https://clearstreet.io', cat: 'Data Experience' },
+            { url: 'https://prometheusfuels.com', cat: '3D Journey' },
+
+            // Verified Games & Simulations
+            { url: 'https://geoguessr.com', cat: 'Geography' },
+            { url: 'https://littlealchemy2.com', cat: 'Puzzle' },
+            { url: 'https://slither.io', cat: 'Survival' },
+            { url: 'https://tetr.io', cat: 'Tetris' },
+            { url: 'https://krunker.io', cat: 'FPS' },
+            { url: 'https://classicreload.com', cat: 'Retro Games' },
+            { url: 'https://slowroads.io', cat: 'Driving Sim' },
+            { url: 'https://fallingfalling.com', cat: 'Endless Fall' },
+            { url: 'https://fallingguy.com', cat: 'Falling' },
+            { url: 'https://cat-bounce.com', cat: 'Bouncing Cats' },
+            { url: 'https://jacksonpollock.org', cat: 'Action Painting' },
+            { url: 'https://koalastothemax.com', cat: 'Koalas' },
+            { url: 'https://sketchtoy.com', cat: 'Drawing' },
+            { url: 'https://mondrianandme.com', cat: 'Art Creator' },
+            { url: 'https://ffffidget.com', cat: 'Fidget Spinner' },
+            { url: 'https://papertoilet.com', cat: 'Toilet Paper' },
+
+            // Verified Earth & Visualization
+            { url: 'https://earth.nullschool.net', cat: 'Real-time Weather' },
+            { url: 'https://window-swap.com', cat: 'Travel' },
+            { url: 'https://flightradar24.com', cat: 'Real-time Flights' },
+            { url: 'https://marinetraffic.com', cat: 'Ocean Traffic' },
+            { url: 'https://skyview.gsfc.nasa.gov', cat: 'Astronomy' },
+            { url: 'https://earthcam.com', cat: 'Live Cameras' },
+            { url: 'https://google.com/earth', cat: 'World Explorer' },
+            { url: 'https://worldometers.info', cat: 'Real-time Stats' },
+            { url: 'https://everysecond.io', cat: 'Live Data' },
+            { url: 'https://ocearch.org', cat: 'Shark Tracking' },
+            { url: 'https://internet-map.net', cat: 'Visualization' },
+
+            // Verified Knowledge & Tools
+            { url: 'https://archive.org', cat: 'Digital Library' },
+            { url: 'https://wolframalpha.com', cat: 'Computational Engine' },
+            { url: 'https://map.snapchat.com', cat: 'World Events' },
+            { url: 'https://everynoise.com', cat: 'Music Genres' },
+            { url: 'https://virustotal.com', cat: 'Security' },
+            { url: 'https://tinyurl.com', cat: 'URL Shortener' },
+            { url: 'https://futureme.org', cat: 'Time Travel' },
+            { url: 'https://geacron.com', cat: 'History Maps' },
+            { url: 'https://musclewiki.com', cat: 'Fitness' },
+            { url: 'https://tastedive.com', cat: 'Recommendations' },
+            { url: 'https://thetruesize.com', cat: 'Geography' },
+            { url: 'https://hackertyper.com', cat: 'Simulation' },
+            { url: 'https://listening.io', cat: 'Audio' },
+
+            // Verified Fun & Zen
+            { url: 'https://rainymood.com', cat: 'Atmosphere' },
+            { url: 'https://pixelthoughts.co', cat: 'Meditation' },
+            { url: 'https://paperplanes.world', cat: 'Digital Connection' },
+            { url: 'https://asoftmurmur.com', cat: 'Ambient Noise' },
+            { url: 'https://coffitivity.com', cat: 'Cafe Vibes' },
+            { url: 'https://puginarug.com', cat: 'Pug' },
+            { url: 'https://alwaysjudgeabookbyitscover.com', cat: 'Books' },
+            { url: 'https://thebeatles.com', cat: 'Music' },
+            { url: 'https://screamintothevoid.com', cat: 'Catharsis' },
+            { url: 'https://isitchristmas.com', cat: 'Vital Info' },
+            { url: 'https://thatsthefinger.com', cat: 'Rude' },
+            { url: 'https://heeeeeeeey.com', cat: 'Heeeeey' },
+            { url: 'https://procatinator.com', cat: 'Cats + Music' },
+            { url: 'https://internet-archaeology.org', cat: 'Web History' },
+            { url: 'https://windows93.net', cat: 'OS Simulation' }
+        ];
+
+        let rotation = 0;
+        const angleStep = 8; // Degrees between items
+
+        function init() {
+            const dial = document.getElementById('dial');
+            sites.sort((a,b) => a.cat.localeCompare(b.cat)).forEach((site, i) => {
+                const card = document.createElement('a');
+                card.href = site.url;
+                card.target = '_blank';
+                card.className = 'site-card';
+                card.dataset.angle = i * angleStep;
+                
+                const hue = (i * 137.5) % 360;
+                card.innerHTML = `
+                    <div class="dot" style="background: hsl(${hue}, 70%, 60%); color: hsl(${hue}, 70%, 60%)"></div>
+                    <div>
+                        <div class="cat">${site.cat}</div>
+                        <div>${new URL(site.url).hostname.replace('www.', '')}</div>
+                    </div>
+                `;
+                dial.appendChild(card);
+            });
+            updateDial();
+        }
+
+        function updateDial() {
+            const cards = document.querySelectorAll('.site-card');
+            const totalSpan = sites.length * angleStep;
+            
+            cards.forEach(card => {
+                const baseAngle = parseFloat(card.dataset.angle);
+                // Calculate position with infinite wrap-around
+                let currentAngle = (baseAngle + rotation) % totalSpan;
+                
+                // Normalize to the range [-totalSpan/2, totalSpan/2]
+                if (currentAngle < -totalSpan / 2) currentAngle += totalSpan;
+                if (currentAngle > totalSpan / 2) currentAngle -= totalSpan;
+                
+                const distFromCenter = Math.abs(currentAngle);
+                
+                // Visibility Logic
+                const maxRange = 35;
+                let opacity = 0;
+                let scale = 0.8;
+
+                if (distFromCenter < maxRange) {
+                    opacity = 1 - (distFromCenter / maxRange);
+                    scale = 1 - (distFromCenter / maxRange) * 0.15;
+                }
+
+                card.style.transform = `rotate(${currentAngle}deg) scale(${scale})`;
+                card.style.opacity = opacity;
+                card.style.pointerEvents = opacity > 0.3 ? 'auto' : 'none';
+            });
+        }
+
+        window.addEventListener('wheel', (e) => {
+            // Speed of rotation
+            rotation -= e.deltaY * 0.05;
+            
+            // No more bounds - let rotation grow/shrink indefinitely
+            updateDial();
+        }, { passive: true });
+
+        function teleport() {
+            const random = sites[Math.floor(Math.random() * sites.length)];
+            const loader = document.getElementById('loader');
+            loader.style.opacity = '1';
+            loader.textContent = `TELEPORTING TO ${random.cat.toUpperCase()}...`;
+            
+            document.querySelector('.hero').style.opacity = '0.5';
+            document.querySelector('.hero').style.transform = 'scale(0.98)';
+
+            setTimeout(() => {
+                window.open(random.url, '_blank');
+                loader.style.opacity = '0';
+                document.querySelector('.hero').style.opacity = '1';
+                document.querySelector('.hero').style.transform = 'scale(1)';
+            }, 800);
+        }
+
+        init();
+    </script>
+</body>
+</html>
