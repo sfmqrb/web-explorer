@@ -39,7 +39,7 @@
         }
 
         .hero h1 {
-            font-size: 8rem; /* Massive Font */
+            font-size: clamp(3.5rem, 8vw, 8rem);
             font-weight: 900;
             letter-spacing: -0.06em;
             margin: 0;
@@ -51,7 +51,7 @@
 
         .hero p {
             color: #475569;
-            font-size: 1.5rem;
+            font-size: clamp(1rem, 1.8vw, 1.5rem);
             margin: 1.5rem 0 4rem;
             font-weight: 300;
             letter-spacing: 0.02em;
@@ -259,6 +259,20 @@
 
         .panel-close:hover { opacity: 1; }
 
+        /* Laptop / medium screen adjustments */
+        @media (min-width: 769px) and (max-width: 1280px) {
+            .hero p { margin: 1rem 0 3rem; }
+            .btn-main { padding: 1.2rem 3rem; }
+            .explorer-side { width: 30px; }
+            .explorer-side:hover { width: 420px; }
+            .moon-panel { width: 520px; right: -520px; }
+            .explorer-side:hover .moon-panel { right: -160px; }
+            .dial-container { right: 185px; }
+            .site-card { width: 210px; transform-origin: 1000px center; }
+            .lazy-doc { bottom: 2rem; left: 2rem; }
+            .stats-badge { top: 2rem; left: 2rem; }
+        }
+
         /* Mobile Adjustments */
         @media (max-width: 768px) {
             .hero h1 { font-size: 4rem; }
@@ -433,7 +447,46 @@
             { url: 'https://thatsthefinger.com', cat: 'Rude' },
             { url: 'https://heeeeeeeey.com', cat: 'Heeeeey' },
             { url: 'https://procatinator.com', cat: 'Cats+' },
-            { url: 'https://windows93.net', cat: 'Retro OS' }
+            { url: 'https://windows93.net', cat: 'Retro OS' },
+            { url: 'https://100000stars.com', cat: 'Space' },
+            { url: 'https://10minutemail.com', cat: 'Privacy' },
+            { url: 'https://alwaysjudgeabookbyitscover.com', cat: 'Judgment' },
+            { url: 'https://calm.com', cat: 'Zen' },
+            { url: 'https://clearstreet.io', cat: 'Finance' },
+            { url: 'https://codepen.io/pen/popular', cat: 'Dev' },
+            { url: 'https://corndog.io', cat: 'Weird' },
+            { url: 'https://eel-slap.com', cat: 'Weird' },
+            { url: 'https://endless.horse', cat: 'Weird' },
+            { url: 'https://evolutionofsmooth.com', cat: 'Satisfying' },
+            { url: 'https://ffffidget.com', cat: 'Fidget' },
+            { url: 'https://findtheinvisiblecow.com', cat: 'Game' },
+            { url: 'https://howmanypeopleareinspacerightnow.com', cat: 'Space' },
+            { url: 'https://internet-archaeology.org', cat: 'History' },
+            { url: 'https://jacksonpollock.org', cat: 'Art' },
+            { url: 'https://koalastothemax.com', cat: 'Art' },
+            { url: 'https://line-rider.com', cat: 'Creative' },
+            { url: 'https://longdogechallenge.com', cat: 'Dogs' },
+            { url: 'https://mondrianandme.com', cat: 'Art' },
+            { url: 'https://my70stv.com', cat: 'Nostalgia' },
+            { url: 'https://my80stv.com', cat: 'Nostalgia' },
+            { url: 'https://my90stv.com', cat: 'Nostalgia' },
+            { url: 'https://noisli.com', cat: 'Ambience' },
+            { url: 'https://oldweb.today', cat: 'Retro' },
+            { url: 'https://optical.is', cat: 'Visuals' },
+            { url: 'https://option5.com', cat: 'Creative' },
+            { url: 'https://papertoilet.com', cat: 'Weird' },
+            { url: 'https://privnote.com', cat: 'Privacy' },
+            { url: 'https://quickdraw.withgoogle.com', cat: 'AI' },
+            { url: 'https://radio.garden', cat: 'Radio' },
+            { url: 'https://shadyurl.com', cat: 'Utility' },
+            { url: 'https://silk.hu', cat: 'Art' },
+            { url: 'https://sketchtoy.com', cat: 'Drawing' },
+            { url: 'https://staggeringbeauty.com', cat: 'Weird' },
+            { url: 'https://stars.chromeexperiments.com', cat: 'Space' },
+            { url: 'https://temp-mail.org', cat: 'Privacy' },
+            { url: 'https://typedrummer.com', cat: 'Music' },
+            { url: 'https://waybackmachine.org', cat: 'Archive' },
+            { url: 'https://sandspiel.club', cat: 'Sim' },
         ];
 
         let rotation = 0;
