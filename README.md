@@ -15,8 +15,9 @@ A high-end, minimalistic gateway to a curated collection of the web's most inter
 
 ## Lazy Doc
 1. Click **Launch** for a random teleport.
-2. Hover the **Right Edge** of the screen and scroll to browse the full dial.
-3. Click any node in the dial to jump directly.
+2. Hover the **Right Edge** of the screen and scroll to browse the full dial (desktop).
+3. Tap the **☰ button** (bottom-right) to open the explorer on mobile.
+4. Click any node in the dial/list to jump directly.
 
 ---
 *Keep It Simple, Stupid.*
